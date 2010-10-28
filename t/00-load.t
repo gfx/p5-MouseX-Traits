@@ -3,4 +3,6 @@
 use strict;
 use warnings;
 use Test::More tests => 1;
-use ok 'MouseX::Traits';
+BEGIN { use_ok('MouseX::Traits') }
+diag "Testing MouseX::Traits/$MouseX::Traits::VERSION";
+

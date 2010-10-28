@@ -1,90 +1,77 @@
 package MouseX::Traits;
 use Mouse::Role;
 
-use MouseX::Traits::Util qw(new_class_with_traits);
-
-use warnings;
-use warnings::register;
-
-use namespace::autoclean;
-
 our $VERSION   = '0.11';
-our $AUTHORITY = 'id:JROCKWAY';
 
 has '_trait_namespace' => (
-    # no accessors or init_arg
     init_arg => undef,
     isa      => 'Str',
     is       => 'bare',
 );
 
+my $transform_trait = sub {
+    my ($class, $name) = @_;
+    return $1 if $name =~ /^[+](.+)$/;
+
+    my $namespace = $class->meta->find_attribute_by_name('_trait_namespace');
+    my $base;
+    if($namespace->has_default){
+        $base = $namespace->default;
+        if(ref $base eq 'CODE'){
+            $base = $base->();
+        }
+    }
+
+    return $name unless defined $base;
+    return join '::', $base, $name;
+};
+
+
+my $anon_serial = 0;
+
 sub with_traits {
     my ($class, @traits) = @_;
 
-    my $new_class = new_class_with_traits(
-        $class,
-        @traits,
-    );
+    $class->does(__PACKAGE__)
+        or Carp::confess("We can't interact with traits for a class ($class) "
+                       . "that does not do MouseX::Traits");
 
-    return $new_class->name;
+    my $meta = $class->meta;
+    if (@traits) {
+        # resolve traits
+        @traits = map {
+            my $orig = $_;
+            if(!ref $orig){
+                my $transformed = $transform_trait->($class, $orig);
+                Mouse::Util::load_class($transformed);
+            }
+            else {
+                $orig;
+            }
+        } @traits;
+
+        $meta = $meta->create(
+            join(q{::} => 'MouseX::Traits::__ANON__::', ++$anon_serial),
+            superclasses => [ $class ],
+            roles        => \@traits,
+            cache        => 1,
+        );
+    }
+
+    return $meta->name;
 }
 
-# somewhat deprecated, but use if you want to
 sub new_with_traits {
     my $class = shift;
 
-    my ($hashref, %args) = 0;
-    if (ref($_[0]) eq 'HASH') {
-        %args    = %{ +shift };
-        $hashref = 1;
-    } else {
-        %args    = @_;
-    }
-
-    my $traits = delete $args{traits} || [];
+    my $args   = $class->BUILDARGS(@_);
+    my $traits = delete $args->{traits} || [];
 
     my $new_class = $class->with_traits(ref $traits ? @$traits : $traits );
-
-    my $constructor = $new_class->meta->constructor_name;
-    confess "$class ($new_class) does not have a constructor defined via the MOP?"
-      if !$constructor;
-
-    return $new_class->$constructor($hashref ? \%args : %args);
-
-}
-
-# this code is broken and should never have been added.  i probably
-# won't delete it, but it is definitely not up-to-date with respect to
-# other features, and never will be.
-#
-# runtime role application is fundamentally broken.  if you really
-# need it, write it yourself, but consider applying the roles before
-# you create an instance.
-
-sub apply_traits {
-    my ($self, $traits, $rebless_params) = @_;
-
-    # disable this warning with "use MouseX::Traits; no warnings 'MouseX::Traits'"
-    warnings::warnif('apply_traits is deprecated due to being fundamentally broken. '.
-                     q{disable this warning with "no warnings 'MouseX::Traits'"});
-
-    # arrayify
-    my @traits = $traits;
-    @traits = @$traits if ref $traits;
-
-    if (@traits) {
-        @traits = MouseX::Traits::Util::resolve_traits(
-            $self, @traits,
-        );
-
-        for my $trait (@traits){
-            $trait->meta->apply($self, rebless_params => $rebless_params || {});
-        }
-    }
+    return $new_class->meta->new_object($args);
 }
 
 no Mouse::Role;
-
 1;
 
 __END__
