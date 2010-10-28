@@ -51,7 +51,7 @@ sub with_traits {
         } @traits;
 
         $meta = $meta->create(
-            join(q{::} => 'MouseX::Traits::__ANON__::', ++$anon_serial),
+            'MouseX::Traits::__ANON__::' . ++$anon_serial,
             superclasses => [ $class ],
             roles        => \@traits,
             cache        => 1,
