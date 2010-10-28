@@ -1,4 +1,4 @@
-package MooseX::Traits::Util;
+package MouseX::Traits::Util;
 use strict;
 use warnings;
 
@@ -15,7 +15,7 @@ sub check_class {
     my $class = shift;
 
     confess "We can't interact with traits for a class ($class) ".
-      "that does not do MooseX::Traits" unless $class->does('MooseX::Traits');
+      "that does not do MouseX::Traits" unless $class->does('MouseX::Traits');
 }
 
 sub transform_trait {
@@ -46,7 +46,7 @@ sub resolve_traits {
         my $orig = $_;
         if(!ref $orig){
             my $transformed = transform_trait($class, $orig);
-            Class::MOP::load_class($transformed);
+            Mouse::Util::load_class($transformed);
             $transformed;
         }
         else {
@@ -66,7 +66,7 @@ sub new_class_with_traits {
     @traits = resolve_traits($class, @traits);
     if (@traits) {
         $meta = $class->meta->create(
-            join(q{::} => 'MooseX::Traits::__ANON__::SERIAL', ++$anon_serial),
+            join(q{::} => 'MouseX::Traits::__ANON__::SERIAL', ++$anon_serial),
             superclasses => [ $class->meta->name ],
             roles        => \@traits,
             cache        => 1,

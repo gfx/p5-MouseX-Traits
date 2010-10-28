@@ -4,15 +4,15 @@ use Test::More tests => 3;
 use Test::Exception;
 
 { package Foo;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
 
   package Bar;
-  use Moose;
+  use Mouse;
   extends 'Foo';
 
   package Trait;
-  use Moose::Role;
+  use Mouse::Role;
 
   sub foo { return 42 };
 }

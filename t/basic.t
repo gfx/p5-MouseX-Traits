@@ -4,7 +4,7 @@ use Test::More;
 use Test::Exception;
 
 { package Trait;
-  use Moose::Role;
+  use Mouse::Role;
   has 'foo' => (
       is       => 'ro',
       isa      => 'Str',
@@ -12,11 +12,11 @@ use Test::Exception;
   );
 
   package Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
 
   package Another::Trait;
-  use Moose::Role;
+  use Mouse::Role;
   has 'bar' => (
       is       => 'ro',
       isa      => 'Str',
@@ -24,8 +24,8 @@ use Test::Exception;
   );
 
   package Another::Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
   has '+_trait_namespace' => ( default => 'Another' );
 
 }

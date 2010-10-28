@@ -4,10 +4,10 @@ use Test::More;
 use Test::Exception;
 
 BEGIN {
-    plan 'skip_all', 'testing parameterized roles requires MooseX::Role::Parameterized 0.13'
+    plan 'skip_all', 'testing parameterized roles requires MouseX::Role::Parameterized 0.13'
       unless eval {
-        require MooseX::Role::Parameterized;
-        MooseX::Role::Parameterized->VERSION('0.13');
+        require MouseX::Role::Parameterized;
+        MouseX::Role::Parameterized->VERSION('0.13');
       };
 
     plan tests => 11;
@@ -15,7 +15,7 @@ BEGIN {
 
 {
     package Role;
-    use Moose::Role;
+    use Mouse::Role;
 
     has 'gorge' => (
         is       => 'ro',
@@ -25,7 +25,7 @@ BEGIN {
 
 {
     package PRole;
-    use MooseX::Role::Parameterized;
+    use MouseX::Role::Parameterized;
 
     parameter 'foo' => (
         is       => 'ro',
@@ -44,9 +44,9 @@ BEGIN {
 
 {
     package Class;
-    use Moose;
+    use Mouse;
 
-    with 'MooseX::Traits';
+    with 'MouseX::Traits';
 }
 
 lives_ok {

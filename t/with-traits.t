@@ -3,10 +3,10 @@ use warnings;
 use Test::More tests => 37;
 use Test::Exception;
 
-use MooseX::Traits; # for "no warnings ..."
+use MouseX::Traits; # for "no warnings ..."
 
 { package Trait;
-  use Moose::Role;
+  use Mouse::Role;
   has 'foo' => (
       is       => 'ro',
       isa      => 'Str',
@@ -14,11 +14,11 @@ use MooseX::Traits; # for "no warnings ..."
   );
 
   package Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
 
   package Another::Trait;
-  use Moose::Role;
+  use Mouse::Role;
   has 'bar' => (
       is       => 'ro',
       isa      => 'Str',
@@ -26,8 +26,8 @@ use MooseX::Traits; # for "no warnings ..."
   );
 
   package Another::Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
   has '+_trait_namespace' => ( default => 'Another' );
 
 }
@@ -82,7 +82,7 @@ throws_ok {
 # deprecated features!  do not use!
 
 {
-    no warnings 'MooseX::Traits';
+    no warnings 'MouseX::Traits';
 
     my $instance = Class->new;
     isa_ok $instance, 'Class';
@@ -98,7 +98,7 @@ throws_ok {
 }
 
 {
-    no warnings 'MooseX::Traits';
+    no warnings 'MouseX::Traits';
 
     my $instance = Class->new;
     isa_ok $instance, 'Class';

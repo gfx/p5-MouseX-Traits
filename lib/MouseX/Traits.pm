@@ -1,7 +1,7 @@
-package MooseX::Traits;
-use Moose::Role;
+package MouseX::Traits;
+use Mouse::Role;
 
-use MooseX::Traits::Util qw(new_class_with_traits);
+use MouseX::Traits::Util qw(new_class_with_traits);
 
 use warnings;
 use warnings::register;
@@ -64,16 +64,16 @@ sub new_with_traits {
 sub apply_traits {
     my ($self, $traits, $rebless_params) = @_;
 
-    # disable this warning with "use MooseX::Traits; no warnings 'MooseX::Traits'"
+    # disable this warning with "use MouseX::Traits; no warnings 'MouseX::Traits'"
     warnings::warnif('apply_traits is deprecated due to being fundamentally broken. '.
-                     q{disable this warning with "no warnings 'MooseX::Traits'"});
+                     q{disable this warning with "no warnings 'MouseX::Traits'"});
 
     # arrayify
     my @traits = $traits;
     @traits = @$traits if ref $traits;
 
     if (@traits) {
-        @traits = MooseX::Traits::Util::resolve_traits(
+        @traits = MouseX::Traits::Util::resolve_traits(
             $self, @traits,
         );
 
@@ -83,7 +83,7 @@ sub apply_traits {
     }
 }
 
-no Moose::Role;
+no Mouse::Role;
 
 1;
 
@@ -91,21 +91,21 @@ __END__
 
 =head1 NAME
 
-MooseX::Traits - automatically apply roles at object creation time
+MouseX::Traits - automatically apply roles at object creation time
 
 =head1 SYNOPSIS
 
 Given some roles:
 
   package Role;
-  use Moose::Role;
+  use Mouse::Role;
   has foo => ( is => 'ro', isa => 'Int' required => 1 );
 
 And a class:
 
   package Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
 
 Apply the roles to the class at C<new> time:
 
@@ -174,7 +174,7 @@ be overridden by prefixing the trait name with C<+>.)
 Example:
 
   package Another::Trait;
-  use Moose::Role;
+  use Mouse::Role;
   has 'bar' => (
       is       => 'ro',
       isa      => 'Str',
@@ -182,8 +182,8 @@ Example:
   );
 
   package Another::Class;
-  use Moose;
-  with 'MooseX::Traits';
+  use Mouse;
+  with 'MouseX::Traits';
   has '+_trait_namespace' => ( default => 'Another' );
 
   my $instance = Another::Class->new_with_traits(
