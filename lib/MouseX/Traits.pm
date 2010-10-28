@@ -186,7 +186,14 @@ Example:
   $instance2->does('Trait')          # true
   $instance2->does('Another::Trait') # false
 
-=head1 AUTHORS and CONTRIBUTORS
+=head1 AUTHOR
+
+Fuji, Goro (gfx) E<lt>gfuji(at)cpan.orgE<gt>
+
+=head1 ORIGINAL AUTHORS and CONTRIBUTORS
+
+The MouseX::Traits is originated from MooseX::Traits, which is
+written and maintained by:
 
 Jonathan Rockway C<< <jrockway@cpan.org> >>
 
@@ -208,10 +215,12 @@ Yuval Kogman C<< <nothingmuch@woobling.org> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008 Infinity Interactive, Inc.
+Copyright 2008-2010 Infinity Interactive, Inc.
 
 L<http://www.iinteractive.com>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
+
+=cut
 
