@@ -1,19 +1,12 @@
 use inc::Module::Install;
 use Module::Install::AuthorRequires;
 
-name 'MooseX-Traits';
-all_from 'lib/MooseX/Traits.pm';
+all_from 'lib/MouseX/Traits.pm';
 
-requires 'Class::MOP'   => '0.84';
-requires 'Moose'        => '0.84';
-requires 'Moose::Role';
-requires 'Sub::Exporter';
-requires 'namespace::autoclean';
+requires 'Mouse' => 0.81;
 
-build_requires 'Moose';
-build_requires 'Test::Exception';
-build_requires 'Test::More';
-build_requires 'ok';
-author_requires 'MooseX::Role::Parameterized' => '0.13';
+test_requires 'Test::Exception';
+test_requires 'Test::More';
+test_requires 'ok';
 
-WriteAll();
+WriteAll(check_nmake => 0);
