@@ -28,6 +28,27 @@ use Test::Exception;
   with 'MouseX::Traits';
   has '+_trait_namespace' => ( default => 'Another' );
 
+  package Yet::Another::Class;
+  use Mouse;
+  with 'MouseX::Traits';
+  has '+_trait_namespace' => ( default => sub {
+      require Mouse::Util;
+      join '::', Mouse::Util::find_meta(shift)->name, 'Traits';
+  });
+
+  package Yet::Another::Class::Traits::Faves;
+  use Mouse::Util::TypeConstraints;
+  use Mouse::Role;
+  has 'favorite_thing' => (
+    is       => 'ro',
+    isa      => enum(qw(
+      RaindropsOnRoses
+      WhiskersOnKittens
+      BrightCopperKettles
+    )),
+    required => 1
+  );
+
 }
 
 foreach my $trait ( 'Trait', ['Trait' ] ) {
@@ -74,6 +95,15 @@ throws_ok {
     can_ok $instance, 'bar';
     is $instance->foo, 'foo';
     is $instance->bar, 'bar';
+}
+{
+    my $instance = Yet::Another::Class->with_traits('Faves')->new(
+        favorite_thing => 'WhiskersOnKittens',
+    );
+    isa_ok $instance, 'Yet::Another::Class';
+    can_ok $instance, 'favorite_thing';
+    is $instance->favorite_thing, 'WhiskersOnKittens';
+    ok $instance->does('Yet::Another::Class::Traits::Faves');
 }
 
 done_testing;

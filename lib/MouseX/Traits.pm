@@ -18,7 +18,7 @@ my $transform_trait = sub {
     if($namespace->has_default){
         $base = $namespace->default;
         if(ref $base eq 'CODE'){
-            $base = $base->();
+            $base = $base->($class);
         }
     }
 
@@ -156,7 +156,8 @@ This role will add the following attributes to the consuming class.
 
 You can override the value of this attribute with C<default> to
 automatically prepend a namespace to the supplied traits.  (This can
-be overridden by prefixing the trait name with C<+>.)
+be overridden by prefixing the trait name with C<+>.).  The C<default>
+subroutine receives the consuming class name as its sole argument.
 
 Example:
 
@@ -185,6 +186,33 @@ Example:
   );
   $instance2->does('Trait')          # true
   $instance2->does('Another::Trait') # false
+
+  package Yet::Another::Class;
+  use Mouse;
+  with 'MouseX::Traits';
+  has '+_trait_namespace' => (default => sub {
+      require Mouse::Util;
+      join '::', Mouse::Util::find_meta(shift)->name, 'Traits';
+  });
+
+  package Yet::Another::Class::Traits::Faves;
+  use Mouse::Util::TypeConstraints;
+  use Mouse::Role;
+  has 'favorite_thing' => (
+    is       => 'ro',
+    isa      => enum(qw(
+      RaindropsOnRoses
+      WhiskersOnKittens
+      BrightCopperKettles
+    )),
+    required => 1
+  );
+
+  my $instance3 = Yet::Another::Class->with_traits('Faves')->new(
+      favorite_thing => 'WhiskersOnKittens',
+  );
+  $instance3->does('Faves')                              # false
+  $instance3->does('Yet::Another::Class::Traits::Faves') # true
 
 =head1 AUTHOR
 
